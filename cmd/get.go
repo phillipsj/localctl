@@ -17,22 +17,48 @@ package cmd
 
 import (
 	"fmt"
-
+	"github.com/apoorvam/goterminal"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"os"
+	"time"
+	"path/filepath"
 )
 
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Installs app provided by URL.",
+	Long: `Installs the application or script provided by the URL into your .local/bin folder:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+The goal is to make it easier to download and install applications/scripts into your home 
+directory's .local/bin folder'`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("get called")
+		writer := goterminal.New(os.Stdout)
+        home, _ := homedir.Dir()
+        expanded, _ := homedir.Expand(home)
+		local := filepath.Join(expanded, ".local", "bin")
+
+		if _, err := os.Stat(local); os.IsNotExist(err) {
+			os.MkdirAll(local, os.ModePerm)
+		}
+
+		fmt.Println("Installing to", local, "...")
+
+		for i := 0; i < 100; i = i + 10 {
+			// add your text to writer's buffer
+			fmt.Fprintf(writer, "Downloading (%d/100) bytes...\n", i)
+			// write to terminal
+			writer.Print()
+			time.Sleep(time.Millisecond * 200)
+
+			// clear the text written by the previous write, so that it can be re-written.
+			writer.Clear()
+		}
+
+		// reset the writer
+		writer.Reset()
+		fmt.Println("Download finished!")
 	},
 }
 
