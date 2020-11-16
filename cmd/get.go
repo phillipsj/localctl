@@ -17,11 +17,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/apoorvam/goterminal"
 	"github.com/mitchellh/go-homedir"
+	"github.com/phillipsj/localctl/services"
 	"github.com/spf13/cobra"
 	"os"
-	"time"
+	"path"
 	"path/filepath"
 )
 
@@ -33,10 +33,12 @@ var getCmd = &cobra.Command{
 
 The goal is to make it easier to download and install applications/scripts into your home 
 directory's .local/bin folder'`,
+	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		writer := goterminal.New(os.Stdout)
-        home, _ := homedir.Dir()
-        expanded, _ := homedir.Expand(home)
+		url := args[0]
+		filename := path.Base(url)
+		home, _ := homedir.Dir()
+		expanded, _ := homedir.Expand(home)
 		local := filepath.Join(expanded, ".local", "bin")
 
 		if _, err := os.Stat(local); os.IsNotExist(err) {
@@ -45,19 +47,12 @@ directory's .local/bin folder'`,
 
 		fmt.Println("Installing to", local, "...")
 
-		for i := 0; i < 100; i = i + 10 {
-			// add your text to writer's buffer
-			fmt.Fprintf(writer, "Downloading (%d/100) bytes...\n", i)
-			// write to terminal
-			writer.Print()
-			time.Sleep(time.Millisecond * 200)
-
-			// clear the text written by the previous write, so that it can be re-written.
-			writer.Clear()
+		err := services.DownloadFile(url, filepath.Join(local, filename))
+		if err != nil {
+			fmt.Println("Download failed!")
+			os.Exit(1)
 		}
 
-		// reset the writer
-		writer.Reset()
 		fmt.Println("Download finished!")
 	},
 }
