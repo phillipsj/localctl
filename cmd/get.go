@@ -29,10 +29,7 @@ import (
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Installs app provided by URL.",
-	Long: `Installs the application or script provided by the URL into your .local/bin folder:
-
-The goal is to make it easier to download and install applications/scripts into your home 
-directory's .local/bin folder'`,
+	Long: "Installs the application or script provided by the URL into your .local/bin folder.",
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		url := args[0]
