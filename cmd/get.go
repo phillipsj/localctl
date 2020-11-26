@@ -23,17 +23,19 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Installs app provided by URL.",
-	Long: "Installs the application or script provided by the URL into your .local/bin folder.",
-	Args: cobra.MinimumNArgs(1),
+	Long:  "Installs the application or script provided by the URL into your .local/bin folder.",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		url := args[0]
-		filename := path.Base(url)
+		// Need to make this step flag based.
+		filename := strings.TrimSuffix(path.Base(url), path.Ext(url))
 		home, _ := homedir.Dir()
 		expanded, _ := homedir.Expand(home)
 		local := filepath.Join(expanded, ".local", "bin")
