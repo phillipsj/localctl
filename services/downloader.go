@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type WriteCounter struct {
@@ -67,6 +68,12 @@ func DownloadFile(url string, filepath string) error {
 	err = os.Rename(filepath+".tmp", filepath)
 	if err != nil {
 		return err
+	}
+
+	if strings.HasSuffix(url, "tar.gz") || strings.HasSuffix(url, "tgz") {
+		fmt.Println("Tar files are not currently supported.")
+	} else if strings.HasSuffix(url, "zip") {
+		fmt.Println("Zip files are not currently supported.")
 	}
 
 	if err := os.Chmod(filepath, 0700); err != nil {

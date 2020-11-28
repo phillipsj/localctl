@@ -34,14 +34,17 @@ var getCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		url := args[0]
-		// Need to make this step flag based.
 		filename := strings.TrimSuffix(path.Base(url), path.Ext(url))
 		home, _ := homedir.Dir()
 		expanded, _ := homedir.Expand(home)
 		local := filepath.Join(expanded, ".local", "bin")
 
 		if _, err := os.Stat(local); os.IsNotExist(err) {
-			os.MkdirAll(local, os.ModePerm)
+			err := os.MkdirAll(local, os.ModePerm)
+			if err != nil {
+				fmt.Println("Could not create ~/.local/bin directory. Please create yourself to continue.")
+				os.Exit(1)
+			}
 		}
 
 		fmt.Println("Installing to", local, "...")
